@@ -19,7 +19,7 @@ return new class extends Migration
             ->onDelete('cascade');
             $table->string('judul');
             $table->datetime('waktu');
-            $table->string('pdf_file');
+            $table->string('filesurat');
             $table->timestamps();
         });
     }

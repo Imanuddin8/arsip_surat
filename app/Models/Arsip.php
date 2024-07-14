@@ -12,7 +12,7 @@ class Arsip extends Model
 
     protected  $table = 'arsip';
 
-    protected $fillable = ['nomor', 'kategori_id', 'judul', 'waktu', 'pdf_file'];
+    protected $fillable = ['nomor', 'kategori_id', 'judul', 'waktu', 'filesurat'];
 
     public function kategori()
     {

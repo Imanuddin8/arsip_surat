@@ -58,8 +58,8 @@
             </div>
             <div class="mb-3">
                 <label for="exampleFormControlInput1" class="form-label">File Surat PDF</label>
-                <input type="file" name="pdf_file" id="pdf_file" class="form-control" required>
-                @error('pdf_file')
+                <input type="file" name="filesurat" id="filesurat" class="form-control" required>
+                @error('filesurat')
                     <div class="text-red mt-1">{{ $message }}</div>
                 @enderror
             </div>

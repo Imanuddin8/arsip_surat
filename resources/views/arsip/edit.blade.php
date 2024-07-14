@@ -65,8 +65,8 @@
             </div>
             <div class="mb-3">
                 <label for="exampleFormControlInput1" class="form-label">File Surat PDF</label>
-                <input type="file" name="pdf_file" class="form-control">
-                @error('pdf_file')
+                <input type="file" name="filesurat" class="form-control">
+                @error('filesurat')
                     <div class="text-red mt-1">{{ $message }}</div>
                 @enderror
                 <small class="form-text text-red text-muted">Kosongi jika tidak ingin mengubah file surat.</small>

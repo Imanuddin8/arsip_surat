@@ -38,7 +38,7 @@
             </table>
             <div class="mb-3">
                 <p>File Surat :</p>
-                <iframe src="{{ asset('storage/' . $arsip->pdf_file) }}" type="application/pdf" width="100%" height="500px" ></iframe>
+                <iframe src="{{ asset('storage/' . $arsip->filesurat) }}" type="application/pdf" width="100%" height="500px" ></iframe>
             </div>
             <div class="d-flex">
                 <a href="{{ route('arsip') }}" class="btn btn-primary mr-2">

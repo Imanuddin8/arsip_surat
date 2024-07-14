@@ -36,13 +36,14 @@ class ArsipController extends Controller
             'nomor' => 'required|unique:arsip',
             'kategori_id' => 'required',
             'judul' => 'required',
-            'pdf_file' => 'required|mimes:pdf|max:2048', // max 2MB
+            'filesurat' => 'required|mimes:pdf|max:2048', // max 2MB
         ]);
 
-        // Simpan file PDF ke dalam storage
-        $file = $request->file('pdf_file');
-        $fileName = time() . '_' . $file->getClientOriginalName();
-        $filePath = $file->storeAs('pdfs', $fileName, 'public');
+        if ($request->hasFile('filesurat')) {
+            $file = $request->file('filesurat');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('uploads', $fileName, 'public');
+        }
 
         // Simpan informasi file ke database
         Arsip::create([
@@ -50,7 +51,7 @@ class ArsipController extends Controller
             'kategori_id' => $request->kategori_id,
             'judul' => $request->judul,
             'waktu' => Carbon::now(),
-            'pdf_file' => $filePath
+            'filesurat' => $filePath ?? null,
         ]);
 
         Alert::toast('Surat berhasil ditambahkan!','success');
@@ -71,19 +72,23 @@ class ArsipController extends Controller
             'kategori_id' => 'required',
             'judul' => 'required',
             'waktu' => 'required',
-            'pdf_file' => 'nullable|mimes:pdf|max:2048', // file PDF tidak wajib di-update
+            'filesurat' => 'nullable|mimes:pdf|max:2048', // file PDF tidak wajib di-update
         ]);
 
         $arsip = Arsip::find($id);
-        // Hapus file lama jika ada
-        if ($arsip->pdf_file) {
-            Storage::delete('public/' . $arsip->pdf_file);
-        }
 
-        // Simpan file PDF baru ke dalam storage
-        $file = $request->file('pdf_file');
-        $fileName = time() . '_' . $file->getClientOriginalName();
-        $filePath = $file->storeAs('pdfs', $fileName, 'public');
+        // Proses unggahan file
+        if ($request->hasFile('filesurat')) {
+            // Hapus file lama jika ada
+            if ($arsip->filesurat) {
+                Storage::delete('public/' . $arsip->filesurat);
+            }
+
+            // Simpan file baru
+            $file = $request->file('filesurat');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('uploads', $fileName, 'public');
+        }
 
         // Perbarui informasi file di database
         $arsip->update([
@@ -91,7 +96,7 @@ class ArsipController extends Controller
             'kategori_id' => $request->kategori_id,
             'judul' => $request->judul,
             'waktu' => $request->waktu,
-            'pdf_file' => $filePath
+            'filesurat' => $filePath
         ]);
 
         Alert::toast('Surat berhasil diedit!','success');
@@ -101,7 +106,7 @@ class ArsipController extends Controller
     public function download($id)
     {
         $arsip = Arsip::findOrFail($id);
-        $filePath = storage_path('app/public/' . $arsip->pdf_file);
+        $filePath = storage_path('app/public/' . $arsip->filesurat);
 
         if (file_exists($filePath)) {
             return response()->download($filePath, basename($filePath));
@@ -113,9 +118,11 @@ class ArsipController extends Controller
     public function destroy($id)
     {
         $arsip = Arsip::findOrFail($id);
-        // Hapus file lama jika ada
-        if ($arsip->pdf_file) {
-            Storage::delete('public/' . $arsip->pdf_file);
+
+        $filePath = storage_path('app/public/' . $arsip->filesurat);
+
+        if (file_exists($filePath)) {
+            unlink($filePath); // Hapus file fisik
         }
 
         $arsip->delete();
